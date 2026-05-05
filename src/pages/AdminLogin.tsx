@@ -270,7 +270,7 @@ const AdminLogin = () => {
                 <p className="text-center text-slate-500 text-xs mt-8">
                     Unauthorized access attempts are monitored and logged.
                     <br />
-                    IP Address: {window.location.hostname}
+                    IP Address: {typeof window !== 'undefined' ? window.location.hostname : '...'}
                 </p>
             </div>
         </div>

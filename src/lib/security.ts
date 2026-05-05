@@ -3,13 +3,6 @@
  * Implements input sanitization, rate limiting, and security best practices
  */
 
-// XSS Protection - Sanitize HTML input
-export const sanitizeHtml = (input: string): string => {
-    const div = document.createElement('div');
-    div.textContent = input;
-    return div.innerHTML;
-};
-
 // Sanitize user input for display
 export const sanitizeInput = (input: string): string => {
     return input
