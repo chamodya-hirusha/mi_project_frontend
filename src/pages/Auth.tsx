@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, AlertCircle, CheckCircle2, Info } from "lucide-react";
+import { ArrowLeft, AlertCircle, CheckCircle2, Info, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import {
   sanitizeInput,
@@ -28,6 +28,8 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("signin");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [profileType, setProfileType] = useState<"Personal" | "business">("Personal");
   const searchParams = useSearchParams();
@@ -47,6 +49,7 @@ const Auth = () => {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
     
@@ -69,6 +72,16 @@ const Auth = () => {
       toast({
         title: "Invalid Phone Number",
         description: "Please enter a valid 10-digit Sri Lankan phone number (e.g., 0771234567)",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please make sure your passwords match",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -224,8 +237,8 @@ const Auth = () => {
             <TabsContent value="signin">
               <Card>
                 <CardHeader className="p-4 sm:p-6">
-                  <CardTitle className="text-xl sm:text-2xl">Sign In</CardTitle>
-                  <CardDescription className="text-sm sm:text-base">Enter your credentials to access your account</CardDescription>
+                  <CardTitle className="text-2xl font-bold text-slate-900">Sign In</CardTitle>
+                  <CardDescription className="text-slate-500 mt-1">Enter your credentials to access your account</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6">
                   <form onSubmit={handleSignIn} className="space-y-3 sm:space-y-4">
@@ -237,19 +250,30 @@ const Auth = () => {
                         type="email"
                         placeholder="your@email.com"
                         required
+                        className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signin-password">Password</Label>
-                      <Input
-                        id="signin-password"
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          id="signin-password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          required
+                          className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-all" disabled={isLoading}>
+                    <Button type="submit" className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg shadow-sm transition-all mt-8" disabled={isLoading}>
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
                   </form>
@@ -291,133 +315,111 @@ const Auth = () => {
 
             <TabsContent value="signup">
               <Card className="border-none shadow-2xl rounded-3xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <CardHeader className="p-6 sm:p-8 border-b bg-muted/20">
+                <CardHeader className="p-4 sm:p-5 border-b bg-muted/20">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-xl sm:text-2xl font-black tracking-tight">
-                        Create Account
+                      <CardTitle className="text-2xl font-bold text-slate-900">
+                        Sign Up
                       </CardTitle>
-                      <CardDescription className="text-sm font-medium">
-                        Sign up to start posting ads
+                      <CardDescription className="text-slate-500 mt-1">
+                        Enter your details to create your account
                       </CardDescription>
                     </div>
                   </div>
                   
-                  <div className="mt-6">
+                  <div className="mt-2 bg-muted/50 p-1 rounded-xl">
                     <RadioGroup
                       value={profileType}
                       onValueChange={(v) => setProfileType(v as "Personal" | "business")}
-                      className="grid grid-cols-2 gap-3"
+                      className="grid grid-cols-2 gap-1"
                     >
                       <Label
                         htmlFor="signup-customer"
                         className={cn(
-                          "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                          "flex items-center justify-center gap-2 px-3 h-9 rounded-lg transition-all cursor-pointer font-medium text-xs",
                           profileType === "Personal"
-                            ? "border-primary bg-primary/5 shadow-sm"
-                            : "border-muted bg-white hover:border-primary/20"
+                            ? "bg-white text-primary shadow-sm"
+                            : "text-muted-foreground hover:bg-white/50"
                         )}
                       >
                         <RadioGroupItem value="Personal" id="signup-customer" className="sr-only" />
-                        <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center",
-                          profileType === "Personal" ? "bg-primary text-white" : "bg-muted text-muted-foreground"
-                        )}>
-                          <UserIcon className="w-4 h-4" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-wider">Personal</span>
+                        <UserIcon className="w-3.5 h-3.5" />
+                        <span>Personal</span>
                       </Label>
 
                       <Label
                         htmlFor="signup-business"
                         className={cn(
-                          "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                          "flex items-center justify-center gap-2 px-3 h-9 rounded-lg transition-all cursor-pointer font-medium text-xs",
                           profileType === "business"
-                            ? "border-primary bg-primary/5 shadow-sm"
-                            : "border-muted bg-white hover:border-primary/20"
+                            ? "bg-white text-primary shadow-sm"
+                            : "text-muted-foreground hover:bg-white/50"
                         )}
                       >
                         <RadioGroupItem value="business" id="signup-business" className="sr-only" />
-                        <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center",
-                          profileType === "business" ? "bg-primary text-white" : "bg-muted text-muted-foreground"
-                        )}>
-                          <Building2 className="w-4 h-4" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-wider">Business</span>
+                        <Building2 className="w-3.5 h-3.5" />
+                        <span>Business</span>
                       </Label>
                     </RadioGroup>
                     
-                    <p className="mt-3 text-[10px] font-bold text-muted-foreground italic px-1">
-                      {profileType === "Personal" 
-                        ? "Individual profile for browsing and private ads." 
-                        : "Business profile for dealers and companies."}
-                    </p>
+
                   </div>
                 </CardHeader>
-                <CardContent className="p-6 sm:p-8">
-                  <form onSubmit={handleSignUp} className="space-y-5">
+                
+                <CardContent className="p-4 sm:p-6">
+                  <form onSubmit={handleSignUp} className="space-y-3">
                     {profileType === "business" ? (
                       <>
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-business-name" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
-                          <div className="relative">
-                            <Input
-                              id="signup-business-name"
-                              name="businessName"
-                              type="text"
-                              placeholder="TradeHub Auto Dealers"
-                              required
-                              className="h-12 bg-muted/30 border-none pl-11 rounded-xl focus:ring-primary/20 font-bold"
-                            />
-                            <Building2 className="w-5 h-5 text-muted-foreground absolute left-3.5 top-3.5" />
-                          </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="signup-business-name" className="text-sm font-medium text-slate-700">Business Name</Label>
+                          <Input
+                            id="signup-business-name"
+                            name="businessName"
+                            type="text"
+                            placeholder="TradeHub Auto Dealers"
+                            required
+                            className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                          />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-business-desc" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Business Description</Label>
-                          <div className="relative">
-                            <Input
-                              id="signup-business-desc"
-                              name="businessDescription"
-                              type="text"
-                              placeholder="Premium vehicle importer in Colombo"
-                              required
-                              className="h-12 bg-muted/30 border-none pl-11 rounded-xl focus:ring-primary/20 font-bold"
-                            />
-                            <MessageSquareText className="w-5 h-5 text-muted-foreground absolute left-3.5 top-3.5" />
-                          </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="signup-business-desc" className="text-sm font-medium text-slate-700">Business Description</Label>
+                          <Input
+                            id="signup-business-desc"
+                            name="businessDescription"
+                            type="text"
+                            placeholder="Premium vehicle importer in Colombo"
+                            required
+                            className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                          />
                         </div>
                       </>
                     ) : (
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-name" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</Label>
-                        <div className="relative">
-                          <Input
-                            id="signup-name"
-                            name="name"
-                            type="text"
-                            placeholder="John Doe"
-                            required
-                            className="h-12 bg-muted/30 border-none pl-11 rounded-xl focus:ring-primary/20 font-bold"
-                          />
-                          <UserIcon className="w-5 h-5 text-muted-foreground absolute left-3.5 top-3.5" />
-                        </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="signup-name" className="text-sm font-medium text-slate-700">Full Name</Label>
+                        <Input
+                          id="signup-name"
+                          name="name"
+                          type="text"
+                          placeholder="John Doe"
+                          required
+                          className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                        />
                       </div>
                     )}
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-email" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Email</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-email" className="text-sm font-medium text-slate-700">Email</Label>
                       <Input
                         id="signup-email"
                         name="email"
                         type="email"
                         placeholder="your@email.com"
                         required
-                        className="h-12 bg-muted/30 border-none rounded-xl focus:ring-primary/20 font-bold"
+                        className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-phone" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-phone" className="text-sm font-medium text-slate-700">Phone Number</Label>
                       <Input
                         id="signup-phone"
                         name="phone"
@@ -426,22 +428,52 @@ const Auth = () => {
                         required
                         pattern="[0-9]{10}"
                         title="Please enter a valid 10-digit phone number"
-                        className="h-12 bg-muted/30 border-none rounded-xl focus:ring-primary/20 font-bold"
+                        className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-password" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Password</Label>
-                      <Input
-                        id="signup-password"
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                        minLength={8}
-                        className="h-12 bg-muted/30 border-none rounded-xl focus:ring-primary/20 font-bold"
-                      />
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-password" className="text-sm font-medium text-slate-700">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          required
+                          minLength={8}
+                          className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
-                    <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all rounded-xl font-black uppercase tracking-widest text-xs mt-2" disabled={isLoading}>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-confirm-password" className="text-sm font-medium text-slate-700">Confirm Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-confirm-password"
+                          name="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          required
+                          minLength={8}
+                          className="h-11 bg-slate-50/50 border-slate-200 rounded-lg focus:bg-white focus:border-primary transition-all font-medium pr-10 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-slate-300 hover:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg shadow-sm transition-all mt-8" disabled={isLoading}>
                       {isLoading ? "Creating account..." : "Sign Up"}
                     </Button>
                   </form>
