@@ -293,7 +293,13 @@ const Dashboard = () => {
     };
 
     const listingsPagination = usePagination({ data: myListings, itemsPerPage: 6 });
-    const allListingsForFavs: VehicleListing[] = JSON.parse(localStorage.getItem("listings") || "[]");
+    const [allListingsForFavs, setAllListingsForFavs] = useState<VehicleListing[]>([]);
+    
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem("listings") || "[]");
+        setAllListingsForFavs(stored);
+    }, []);
+
     const favoriteListings = allListingsForFavs.filter((l: VehicleListing) =>
         favorites.includes(l.id) && l.status === "approved"
     );
