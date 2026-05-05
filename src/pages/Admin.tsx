@@ -88,3 +88,4 @@
 // };
 
 // export default Admin;
+export default function DummyAdmin() { return null; }
