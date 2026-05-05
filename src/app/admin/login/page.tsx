@@ -1,8 +1,8 @@
-"use client";
+// "use client";
 
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
 
-export default function Page() {
-    return notFound();
-}
+// export default function Page() {
+//     return notFound();
+// }
 

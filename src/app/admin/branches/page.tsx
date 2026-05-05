@@ -1,7 +1,7 @@
-"use client";
+// "use client";
 
-import AdminBranchesPage from "@/pages/AdminBranches";
+// import AdminBranchesPage from "@/pages/AdminBranches";
 
-export default function Page() {
-    return <AdminBranchesPage />;
-}
+// export default function Page() {
+//     return <AdminBranchesPage />;
+// }

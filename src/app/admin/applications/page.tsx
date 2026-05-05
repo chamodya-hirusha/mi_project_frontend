@@ -1,7 +1,7 @@
-"use client";
+// // "use client";
 
-import AdminApplicationsPage from "@/pages/AdminApplications";
+// import AdminApplicationsPage from "@/pages/AdminApplications";
 
-export default function Page() {
-    return <AdminApplicationsPage />;
-}
+// export default function Page() {
+//     return <AdminApplicationsPage />;
+// }

@@ -1,7 +1,7 @@
-"use client";
+// "use client";
 
-import AdminPage from "@/pages/Admin";
+// import AdminPage from "@/pages/Admin";
 
-export default function Page() {
-    return <AdminPage />;
-}
+// export default function Page() {
+//     return <AdminPage />;
+// }
