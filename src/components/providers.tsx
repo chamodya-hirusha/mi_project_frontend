@@ -20,7 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Seed demo listings
         const storedListings = localStorage.getItem("listings");
-        let listings = storedListings ? JSON.parse(storedListings) : [];
+        const listings = storedListings ? JSON.parse(storedListings) : [];
 
         // Always ensure pending vehicles from demo data exist
         const pendingVehicles = demoListings.filter((l: any) => l.status === "pending");
@@ -59,7 +59,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
         // Seed demo users
         const storedUsers = localStorage.getItem("users");
-        let users = storedUsers ? JSON.parse(storedUsers) : [];
+        const users = storedUsers ? JSON.parse(storedUsers) : [];
         let usersUpdated = false;
 
         demoUsers.forEach(demoUser => {
